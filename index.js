@@ -16,6 +16,8 @@ function startGame(event) {
 	    sequenceOfColors = [];
 
 	    $('body').removeClass('red-background');
+	    $('h2').removeClass('visible');
+
 	    generateSequence();
 	}	    
 }

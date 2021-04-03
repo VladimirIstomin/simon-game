@@ -76,7 +76,7 @@ h1, h2 {
 	background-color: #BEFF60
 }
 
-@media (max-width: 800px) {
+@media (max-width: 900px) {
 	.wrapper {
 		grid-template-columns: 1fr;
 		grid-gap: 2%;
