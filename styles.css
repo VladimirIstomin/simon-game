@@ -12,6 +12,10 @@ h1, h2 {
 	margin: 0;
 }
 
+.red-background {
+	background-color: #FF4040;
+}
+
 /*Title*/
 
 .title {
@@ -52,24 +56,24 @@ h1, h2 {
 	width: 100%;
 }
 
-.red {
+.opacity {
+	opacity: 0.5;
+}
+
+#red {
 	background-color: #ea5455;
 }
 
-.orange {
+#orange {
 	background-color: #f07b3f;
 }
 
-.yellow {
+#yellow {
 	background-color: #ffd460;
 }
 
-.lime {
+#lime {
 	background-color: #BEFF60
-}
-
-.highligted {
-	opacity: 0.5;
 }
 
 @media (max-width: 800px) {

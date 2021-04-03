@@ -1,96 +1,76 @@
-$('body').on('keydown', configureGame);
+$(document).on('keydown click', startGame);
 
 // Variables to which needed access in several functions
+let squareColors = ['red', 'orange', 'yellow', 'lime']
 let level;
-let sequenceOfSquares;
-let squares;
-let startGameSound;
-let currentPostionInSequence;
+let gameStarted = false;
+let sequenceOfColors;
+let userSequenceOfColors;
 
 
-function configureGame() {
-    squares = $('.square'); // alternative: document.querySelectorAll('.square')
+function startGame(event) {
+	if (event.type === 'click' && gameStarted === true) {}
+	else {
+		gameStarted = true;
+		level = 0;
+	    sequenceOfColors = [];
 
-    // Sound configuration
-    startGameSound = new Audio('sounds/crash.mp3');
-
-    let squareSounds = [];
-    for (let i = 1; i < 5; i++) {
-        squareSounds.push(new Audio(`sounds/tom-${i}.mp3`));
-    }
-
-    squares.click(event => { // alternative: squares.forEach(square => sqaure.addEventListener ...)
-        let element = $(event.target);
-        let clickSound;
-
-        if (element.hasClass('red')) {
-            clickSound = squareSounds[0];
-        } else if (element.hasClass('orange')) {
-            clickSound = squareSounds[1];
-        } else if (element.hasClass('yellow')) {
-            clickSound = squareSounds[2];
-        } else if (element.hasClass('lime')) {
-            clickSound = squareSounds[3];
-        }
-
-        clickSound.play();
-
-        // Stop playing sound, because in case of clicking fair fast, the audio won't be played
-        setTimeout(() => {
-            clickSound.pause();
-            clickSound.currentTime = 0;
-        }, 500);
-    });
-
-    startGame();
+	    $('body').removeClass('red-background');
+	    generateSequence();
+	}	    
 }
 
 
-function startGame() {
-    level = 0;
-    sequenceOfSquares = [];
-    $('h2').removeClass('visible');
-
-    startNewLevel();
-}
-
-
-function startNewLevel() {
-    squares.off('click', checkSequence);
-
-    startGameSound.play();
-
-    //Defining the square, which will be highlighted
-    let squareNumber = Math.floor(Math.random() * 4);
+function generateSequence() {
     level++;
-    $('h1').text(`Current level is ${level}`);
-    sequenceOfSquares.push(squares[squareNumber]);
+    $('h1').text(`Currently you are at level ${level}`);
+    userSequenceOfColors = [];
 
-    // Highlighting the square
-    let currentSquare = $(squares[squareNumber]);
-    currentSquare.addClass('highligted');
-    setTimeout(() => currentSquare.removeClass('highligted'), 500);
+    // Define next color
+    let nextColorNumber = Math.floor(Math.random() * 4);
+    let nextColor = squareColors[nextColorNumber];
+    sequenceOfColors.push(nextColor);
 
-    // Start checking the sequence
-    currentPostionInSequence = 0;
-    squares.on('click', checkSequence);
+    // Highlight the next color
+    $(`#${nextColor}`).fadeOut(100).fadeIn(100);
+    playSound(nextColor);
 }
 
 
-function checkSequence(event) {
-    if (event.target === sequenceOfSquares[currentPostionInSequence]) {
-        currentPostionInSequence++;
-    } else {
-        endGame(level);
+$('.square').click(event => {
+	// Handle click from the point of view of sequence of colors
+    let currentPickedColor = $(event.target).attr('id');
+    userSequenceOfColors.push(currentPickedColor);
+
+    //Highlight picked color
+    $(`#${currentPickedColor}`).addClass('opacity');
+    setTimeout(() => $(`#${currentPickedColor}`).removeClass('opacity'), 100);
+
+    checkSequence();
+})
+
+
+function checkSequence() {
+    let lastPickedColorIndex = userSequenceOfColors.length - 1;
+    if (userSequenceOfColors[lastPickedColorIndex] !== sequenceOfColors[lastPickedColorIndex]) {
+        endGame();
+    } else if (userSequenceOfColors.length === sequenceOfColors.length) {
+        setTimeout(() => generateSequence(), 1000);
     }
 
-    if (currentPostionInSequence === sequenceOfSquares.length) {
-        startNewLevel();
-    }
 }
 
 
-function endGame(level) {
-    $('h1').html(`You lost at level ${level}!`);
+function playSound(name) {
+    let sound = new Audio(`sounds/${name}.mp3`);
+    sound.play();
+}
+
+
+function endGame() {
+    $('body').addClass('red-background');
+    $('h1').text(`You lost at level ${level}!`);
     $('h2').addClass('visible');
+  	playSound('level');
+  	setTimeout(() => gameStarted = false);
 }
